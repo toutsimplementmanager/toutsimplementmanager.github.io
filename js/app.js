@@ -79,6 +79,7 @@
           <label for="password">Mot de passe <span class="muted">(6 caractères minimum)</span></label>
           <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required>
           <label class="check"><input type="checkbox" name="consent"> J'accepte de recevoir des conseils de management et des informations sur l'accompagnement 1:1. Désinscription possible à tout moment.</label>
+          <p class="small muted" style="margin:10px 0 0">${esc(C.config.privacyNotice)}</p>
           <div class="error" id="formError"></div>
           <button class="btn primary block" style="margin-top:8px">Créer mon compte et lancer le quiz</button>
         </form>

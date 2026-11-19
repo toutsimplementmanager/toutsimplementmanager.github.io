@@ -24,11 +24,13 @@ window.CONTENT = {
     ],
     coachingCta: "Réserver mon appel découverte",
 
-    // Optionnel : URL qui reçoit chaque inscription (Make, Zapier, Brevo, Google Apps Script…).
-    // Laisser vide pour ne rien envoyer. Données envoyées : prénom, email, date, consentement.
+    // Google Sheet des inscrits : coller ici l'URL de l'application Web Apps Script (se termine par /exec).
+    // Voir google-sheet/INSTALLATION.md. La même URL sert pour les deux champs.
     signupWebhook: "",
-    // Optionnel : URL qui reçoit le résultat du quiz (prénom, email, profil, scores).
     resultWebhook: "",
+
+    // Texte d'information affiché sous le formulaire d'inscription.
+    privacyNotice: "Ton prénom, ton email et ton profil sont transmis à Tout simplement manager pour te donner accès à l'application et, si tu as coché la case, t'envoyer des conseils.",
   },
 
   /* ---------- Les 5 profils managériaux ---------- */

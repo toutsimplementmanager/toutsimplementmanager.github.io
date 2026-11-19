@@ -82,7 +82,7 @@
       const result = { id: uid(), date: new Date().toISOString(), scores, profile };
       user.results.push(result);
       save();
-      post(CONTENT.config.resultWebhook, { event: 'quiz', firstName: user.firstName, email: user.email, profile, scores, date: result.date });
+      post(CONTENT.config.resultWebhook, { event: 'quiz', firstName: user.firstName, email: user.email, profile, profileName: CONTENT.profiles[profile].name, scores, date: result.date });
       return result;
     },
 
