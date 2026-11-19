@@ -52,7 +52,7 @@
     <section class="hero">
       <img src="icon.svg" alt="" class="logo">
       <div class="eyebrow">${esc(C.config.appName)}</div>
-      <h1>Quel manager es-tu vraiment ?</h1>
+      <h1>Quel manager es-tu vraiment&nbsp;?</h1>
       <p class="lead">${esc(C.config.tagline)}</p>
       <div class="actions" style="justify-content:center">
         <a href="#/inscription" class="btn primary">Commencer le quiz — c'est gratuit</a>
@@ -79,7 +79,7 @@
           <label for="password">Mot de passe <span class="muted">(6 caractères minimum)</span></label>
           <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required>
           <label class="check"><input type="checkbox" name="consent"> J'accepte de recevoir des conseils de management et des informations sur l'accompagnement 1:1. Désinscription possible à tout moment.</label>
-          <p class="small muted" style="margin:10px 0 0">${esc(C.config.privacyNotice)}</p>
+          <p class="small muted" style="margin:10px 0 0">${esc(C.config.privacyNotice)} <a href="#/confidentialite">En savoir plus</a></p>
           <div class="error" id="formError"></div>
           <button class="btn primary block" style="margin-top:8px">Créer mon compte et lancer le quiz</button>
         </form>
@@ -370,6 +370,11 @@
       </div>`;
   };
 
+  // ---------- Pages légales ----------
+  const legalBack = (user) => `<a href="${user ? '#/fiches' : '#/'}" class="back">← Retour</a>`;
+  views['mentions-legales'] = (user) => legalBack(user) + LEGAL_PAGES.mentions(LEGAL);
+  views.confidentialite = (user) => legalBack(user) + LEGAL_PAGES.confidentialite(LEGAL);
+
   // ---------- Compte ----------
   views.compte = (user) => `
     <h1>Mon compte</h1>
@@ -389,8 +394,9 @@
 
   // ---------- Routeur ----------
   const PUBLIC = ['accueil', 'inscription', 'connexion'];
+  const OPEN = ['mentions-legales', 'confidentialite'];
   const NEEDS_PROFILE = ['resultat', 'fiches', 'fiche', 'debrief', 'accompagnement'];
-  const TITLES = { accueil: 'Bienvenue', inscription: 'Inscription', connexion: 'Connexion', quiz: 'Quiz', resultat: 'Mon profil', fiches: 'Mes fiches', fiche: 'Fiche', debrief: 'Débrief', historique: 'Historique', accompagnement: 'Aller plus loin', compte: 'Compte' };
+  const TITLES = { accueil: 'Bienvenue', inscription: 'Inscription', connexion: 'Connexion', quiz: 'Quiz', resultat: 'Mon profil', fiches: 'Mes fiches', fiche: 'Fiche', debrief: 'Débrief', historique: 'Historique', accompagnement: 'Aller plus loin', compte: 'Compte', 'mentions-legales': 'Mentions légales', confidentialite: 'Confidentialité' };
 
   function render() {
     let [route, arg] = location.hash.replace(/^#\/?/, '').split('/');
@@ -398,7 +404,7 @@
     if (!views[route]) route = 'accueil';
     const user = Store.current();
 
-    if (!user && !PUBLIC.includes(route)) return go('');
+    if (!user && !PUBLIC.includes(route) && !OPEN.includes(route)) return go('');
     if (user && PUBLIC.includes(route)) return go(Store.profile(user) ? 'fiches' : 'quiz');
     if (user && !Store.profile(user) && NEEDS_PROFILE.includes(route)) return go('quiz');
 
@@ -467,7 +473,7 @@
     if (act === 'retake') confirmModal('Refaire le quiz ?', 'Ton nouveau résultat deviendra ton profil actuel. Tes débriefs sont conservés.', 'Refaire le quiz', () => { quiz = null; go('quiz'); });
     if (act === 'delete-debrief') confirmModal('Supprimer ce débrief ?', 'Cette action est définitive.', 'Supprimer', () => { Store.deleteDebrief(el.dataset.id); toast('Débrief supprimé'); go('historique'); });
     if (act === 'logout') { Store.logout(); go(''); }
-    if (act === 'delete-account') confirmModal('Supprimer ton compte ?', 'Ton profil et tous tes débriefs seront définitivement supprimés de cet appareil.', 'Supprimer mon compte', () => { Store.deleteAccount(); go(''); toast('Compte supprimé'); });
+    if (act === 'delete-account') confirmModal('Supprimer ton compte ?', `Ton profil et tous tes débriefs seront définitivement supprimés de cet appareil. Pour être aussi retiré(e) de la liste des inscrits, écris à ${LEGAL.email}.`, 'Supprimer mon compte', () => { Store.deleteAccount(); go(''); toast('Compte supprimé'); });
     if (act === 'export') {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([Store.exportUser()], { type: 'application/json' }));

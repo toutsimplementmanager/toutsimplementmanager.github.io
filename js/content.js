@@ -30,7 +30,7 @@ window.CONTENT = {
     resultWebhook: "https://script.google.com/macros/s/AKfycbzriV-W7gIGVuyft1PzzTJgxYzvRet2CXXImEDEVF-qV6xwvoxr6kxXIrYAHgUTpAL1/exec",
 
     // Texte d'information affiché sous le formulaire d'inscription.
-    privacyNotice: "Ton prénom, ton email et ton profil sont transmis à Tout simplement manager pour te donner accès à l'application et, si tu as coché la case, t'envoyer des conseils.",
+    privacyNotice: "Ton prénom, ton email et ton profil sont transmis à Jean-François Guckert (Tout simplement manager) pour te donner accès à l'application et, si tu as coché la case, t'envoyer des conseils.",
   },
 
   /* ---------- Les 5 profils managériaux ---------- */
