@@ -1,38 +1,42 @@
-# Copilote Manager
+# Copilote Manager — v1
 
-Votre copilote pour piloter votre équipe au quotidien : one-to-one, tâches, objectifs et feedbacks — avec un assistant qui vous dit **quoi faire ensuite**.
+Application web qui fait découvrir son **profil managérial** à un manager, lui montre **le piège qui le guette** dans chaque situation clé, et l'amène vers un **accompagnement 1:1**.
 
-## Fonctionnalités
+## Parcours
 
-- **Tableau de bord** : indicateurs clés (tâches ouvertes / en retard, humeur moyenne de l'équipe) et suggestions du copilote.
-- **Copilote** : détecte les 1:1 en retard par rapport au rythme choisi, les collaborateurs en difficulté, les tâches en retard, les risques de surcharge, les objectifs menacés, les feedbacks oubliés, les périodes d'intégration et les anniversaires d'ancienneté.
-- **Équipe** : fiche par collaborateur (poste, date d'arrivée, rythme de 1:1, notes) avec historique complet.
-- **One-to-one** : prise de notes, humeur perçue, actions décidées (transformées automatiquement en tâches) et **trame de préparation générée** à partir de l'historique.
-- **Tâches** : tableau Kanban (À faire / En cours / Terminé) avec glisser-déposer, priorités et échéances.
-- **Objectifs** : objectifs d'équipe ou individuels, résultats clés et avancement.
-- **Feedbacks** : journal de feedbacks positifs et constructifs, avec trame SBI (Situation – Comportement – Impact).
-- **Données** : export / import JSON, données de démonstration, réinitialisation.
+1. **Inscription** (prénom, email, mot de passe, consentement marketing facultatif).
+2. **Quiz de profil managérial** : 10 questions, 4 profils (Capitaine, Coach, Fédérateur, Éclaireur).
+3. **Résultat** : profil, forces, piège principal + antidote, répartition des styles. Le quiz peut être refait.
+4. **Les 4 fiches** (Déléguer, Recadrer, Remotiver, Gérer un conflit) : méthode, phrases utiles et **le piège qui s'affiche selon le profil**.
+5. **Débrief** après une situation vécue (situation, action, résultat, piège évité ou non, enseignements, prochaine action), **sauvegardé dans l'historique** (statistiques, filtre par fiche, détail, suppression).
+6. Bouton **« Aller plus loin »** partout → page d'accompagnement 1:1 personnalisée selon le profil → lien de réservation externe (le profil est transmis dans l'URL).
 
-Les données restent **dans votre navigateur** (localStorage) : rien n'est envoyé sur un serveur.
+## Personnaliser le contenu
 
-## Lancer l'application
+Tout le contenu éditorial se trouve dans **`js/content.js`** : textes d'accueil, profils, questions du quiz, fiches, pièges et antidotes, page d'accompagnement.
 
-Aucune installation nécessaire :
+À faire avant la mise en ligne :
+- `coachingUrl` : ton lien de réservation (Calendly, site…).
+- `signupWebhook` / `resultWebhook` (facultatif) : une URL (Make, Zapier, Brevo, Google Apps Script…) qui recevra chaque inscription et chaque résultat de quiz, pour récupérer les contacts.
+
+## Lancer en local
 
 ```bash
-# depuis le dossier du projet
-python3 -m http.server 8000
-# puis ouvrir http://localhost:8000
+python3 -m http.server 8000   # puis ouvrir http://localhost:8000
 ```
 
-Vous pouvez aussi simplement ouvrir `index.html` dans votre navigateur, ou publier le dossier sur n'importe quel hébergement statique (GitHub Pages, Netlify, Vercel…). L'application est installable sur mobile (PWA).
+Pour le mettre en ligne : déposer le dossier sur n'importe quel hébergement statique (Netlify, Vercel, GitHub Pages…). L'application peut être installée sur l'écran d'accueil d'un téléphone.
+
+## Limites de la v1
+
+Les comptes et débriefs sont enregistrés **dans le navigateur de l'utilisateur** (pas de serveur) : un compte créé sur téléphone n'est pas retrouvé sur ordinateur, et il n'y a pas de « mot de passe oublié ». Les webhooks permettent néanmoins de récupérer les inscriptions de ton côté. Une v2 pourra ajouter une vraie base de données (ex. Supabase ou Firebase).
 
 ## Structure
 
 ```
-index.html            Structure de la page
-css/style.css         Styles (clair / sombre, responsive)
-js/store.js           Stockage des données et données de démo
-js/copilot.js         Moteur de suggestions et préparation des 1:1
-js/app.js             Interface, navigation et formulaires
+index.html        Structure de la page
+css/style.css     Design (clair/sombre, mobile d'abord)
+js/content.js     ← Contenu éditorial et réglages
+js/store.js       Comptes, résultats, débriefs (localStorage) et webhooks
+js/app.js         Parcours, écrans et navigation
 ```
