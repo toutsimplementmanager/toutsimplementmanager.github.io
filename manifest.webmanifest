@@ -1,0 +1,9 @@
+{
+  "name": "Copilote Manager",
+  "short_name": "Copilote",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#4f46e5",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
