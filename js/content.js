@@ -13,7 +13,7 @@ window.CONTENT = {
 
     // Bouton « Aller plus loin » : lien vers ta page de réservation (Calendly, site, etc.)
     // Le profil de l'utilisateur est ajouté automatiquement au lien (?profil=...).
-    coachingUrl: "https://koalendar.com/e/toutsimplementjeff",
+    coachingUrl: "https://koalendar.com/e/toutsimplementmanager",
     coachingTitle: "Accompagnement 1:1",
     coachingPitch:
       "Tu as identifié ton profil et ton piège. L'étape suivante : travailler tes situations réelles en tête-à-tête, avec un plan d'action taillé pour toi.",
