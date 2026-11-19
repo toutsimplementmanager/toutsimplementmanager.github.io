@@ -5,10 +5,10 @@ Application web qui fait découvrir son **profil managérial** à un manager, lu
 ## Parcours
 
 1. **Inscription** (prénom, email, mot de passe, consentement marketing facultatif).
-2. **Quiz de profil managérial** : 10 questions, 4 profils (Capitaine, Coach, Fédérateur, Éclaireur).
+2. **Quiz de profil managérial** : 10 questions, 5 profils (Copain, Control freak, Absent, Perfectionniste, Suiveur).
 3. **Résultat** : profil, forces, piège principal + antidote, répartition des styles. Le quiz peut être refait.
-4. **Les 4 fiches** (Déléguer, Recadrer, Remotiver, Gérer un conflit) : méthode, phrases utiles et **le piège qui s'affiche selon le profil**.
-5. **Débrief** après une situation vécue (situation, action, résultat, piège évité ou non, enseignements, prochaine action), **sauvegardé dans l'historique** (statistiques, filtre par fiche, détail, suppression).
+4. **Les 4 fiches** (Recadrer un collaborateur, Manager un ancien collègue, Annoncer une décision qu'on ne partage pas, Dire non à sa hiérarchie), toutes sur le même modèle : durée, 3 questions de cadrage, trame, réactions probables, **piège selon le profil** et débrief de 2 minutes.
+5. **Débrief de 2 minutes** : les 3 questions propres à la fiche (Oui / En partie / Non) + « ce que je ferai différemment », **sauvegardé dans l'historique** (statistiques, filtre par fiche, détail, suppression).
 6. Bouton **« Aller plus loin »** partout → page d'accompagnement 1:1 personnalisée selon le profil → lien de réservation externe (le profil est transmis dans l'URL).
 
 ## Personnaliser le contenu

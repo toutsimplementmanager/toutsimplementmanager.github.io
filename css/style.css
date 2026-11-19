@@ -171,6 +171,28 @@ ol.method li::before {
 .quote { padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 10px 10px 0; margin-bottom: 8px; font-style: italic; }
 .back { display: inline-block; margin-bottom: 14px; color: var(--muted); text-decoration: none; font-weight: 500; }
 
+
+/* Fiche — modèle commun */
+.duration { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin: 4px 0 0; }
+.num-title {
+  display: inline-flex; width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: var(--accent-text);
+  align-items: center; justify-content: center; font-size: 14px; margin-right: 6px; vertical-align: 1px;
+}
+.num-title.danger { background: var(--danger); color: #fff; }
+ul.framing { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+ul.framing li { padding-left: 28px; position: relative; }
+ul.framing li::before { content: "?"; position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface-2); color: var(--muted); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+ol.method .quote { margin: 6px 0 0; font-style: normal; }
+.reactions { display: grid; gap: 12px; }
+.reaction { display: grid; gap: 6px; }
+.r-them { justify-self: start; max-width: 90%; background: var(--surface-2); padding: 10px 14px; border-radius: 14px 14px 14px 4px; font-weight: 600; }
+.r-you { justify-self: end; max-width: 90%; background: var(--primary); color: var(--primary-text); padding: 10px 14px; border-radius: 14px 14px 4px 14px; }
+.trap details summary { cursor: pointer; color: var(--danger); }
+.ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ul.answers-list { list-style: none; margin: 0 0 8px; padding: 0; }
+ul.answers-list li { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+ul.answers-list li .badge { flex-shrink: 0; }
+
 /* CTA banner */
 .cta-banner {
   background: var(--primary); color: var(--primary-text); border-radius: var(--radius); padding: 24px;

@@ -12,9 +12,6 @@
   const fiche = (id) => C.fiches.find((f) => f.id === id);
   const profileOf = (key) => C.profiles[key];
   const go = (route) => { location.hash = '#/' + route; };
-  const outcome = (v) => C.debriefOutcomes.find((o) => o.v === v) || {};
-  const trapAnswer = (v) => C.debriefTrapAnswers.find((o) => o.v === v) || {};
-  const trapBadge = (v) => ({ non: 'ok', partiel: 'warn', oui: 'danger' }[v] || '');
 
   function toast(msg) {
     const t = $('#toast');
@@ -63,8 +60,8 @@
       </div>
       <div class="steps-intro">
         <div class="card"><div class="num">🧭</div><h3>1. Ton profil</h3><p class="muted small">${C.quiz.length} questions pour découvrir ton style de management parmi ${Object.keys(C.profiles).length} profils.</p></div>
-        <div class="card"><div class="num">📚</div><h3>2. Tes ${C.fiches.length} fiches</h3><p class="muted small">Les situations clés du manager, avec LE piège qui te guette selon ton profil.</p></div>
-        <div class="card"><div class="num">🗂️</div><h3>3. Tes débriefs</h3><p class="muted small">Après chaque situation, débriefe et suis tes progrès dans ton historique.</p></div>
+        <div class="card"><div class="num">📚</div><h3>2. Tes ${C.fiches.length} fiches</h3><p class="muted small">Les situations qui font peur aux nouveaux managers, avec une trame et LE piège qui te guette selon ton profil.</p></div>
+        <div class="card"><div class="num">🗂️</div><h3>3. Tes débriefs</h3><p class="muted small">Après chaque échange, un débrief de 2 minutes sauvegardé dans ton historique.</p></div>
       </div>
     </section>`;
 
@@ -192,14 +189,15 @@
       <h1>Tes ${C.fiches.length} fiches</h1>
       <p class="muted">Profil <b style="color:${p.color}">${p.emoji} ${esc(p.name)}</b> : chaque fiche te montre le piège qui te concerne.</p>
       <div class="grid2 section">
-        ${C.fiches.map((f) => {
+        ${C.fiches.map((f, i) => {
           const n = user.debriefs.filter((d) => d.ficheId === f.id).length;
           return `<a class="card fiche-card" href="#/fiche/${f.id}">
             <span class="emoji">${f.emoji}</span>
-            <h3 style="margin:4px 0 0">${esc(f.title)}</h3>
+            <div class="eyebrow" style="margin:4px 0 0">Fiche ${i + 1}</div>
+            <h3 style="margin:0">${esc(f.title)}</h3>
             <p class="muted small" style="margin:0">${esc(f.summary)}</p>
             <div>${n ? `<span class="badge ok">${n} débrief${n > 1 ? 's' : ''}</span>` : '<span class="badge">À expérimenter</span>'}</div>
-            <div class="trap-hint">⚠️ Ton piège : ${esc(f.traps[pk].trap.split(/[:,.]/)[0].trim())}…</div>
+            <div class="trap-hint">⚠️ Ton piège : ${esc(f.traps[pk])}</div>
           </a>`;
         }).join('')}
       </div>
@@ -216,76 +214,92 @@
       <a href="#/fiches" class="back">← Mes fiches</a>
       <div class="eyebrow">Fiche ${C.fiches.indexOf(f) + 1} / ${C.fiches.length}</div>
       <h1>${f.emoji} ${esc(f.title)}</h1>
-      <p class="muted" style="font-size:18px">${esc(f.summary)}</p>
+      <p class="duration">⏱️ ${esc(f.duration)}</p>
       <div class="stack section">
-        <div class="card"><h3>🕐 Quand l'utiliser</h3><p style="margin:0">${esc(f.when)}</p></div>
+        <div class="card"><h3><span class="num-title">1</span> Les 3 questions de cadrage</h3>
+          <ul class="framing">${f.framing.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
+        </div>
+        <div class="card"><h3><span class="num-title">2</span> La trame</h3>
+          <ol class="method">${f.steps.map((s) => `<li><div><b>${esc(s.t)}</b><div class="quote">${esc(s.d)}</div></div></li>`).join('')}</ol>
+        </div>
+        <div class="card"><h3><span class="num-title">3</span> Les réactions probables</h3>
+          <div class="reactions">${f.reactions.map((r) => `<div class="reaction"><div class="r-them">${esc(r.r)}</div><div class="r-you">→ ${esc(r.a)}</div></div>`).join('')}</div>
+        </div>
         <div class="trap">
-          <h3>⚠️ Le piège du ${esc(p.name.replace(/^(Le |L')/, ''))} ${p.emoji}</h3>
-          <p style="margin:0">${esc(f.traps[pk].trap)}</p>
-          <div class="antidote"><b>Antidote :</b> ${esc(f.traps[pk].antidote)}</div>
+          <h3><span class="num-title danger">4</span> Le piège selon ton profil</h3>
+          <div class="eyebrow" style="color:var(--danger)">${p.emoji} Profil ${esc(p.name)}</div>
+          <p style="margin:0;font-size:18px;font-weight:600">${esc(f.traps[pk])}</p>
+          <details style="margin-top:14px"><summary class="small"><b>Voir les pièges des autres profils</b></summary>
+            ${others.map((k) => `<p class="small" style="margin:10px 0 0"><b>${profileOf(k).emoji} ${esc(profileOf(k).name)} :</b> ${esc(f.traps[k])}</p>`).join('')}
+          </details>
         </div>
-        <div class="card"><h3>🛠️ La méthode</h3>
-          <ol class="method">${f.steps.map((s) => `<li><div><b>${esc(s.t)}</b><div class="muted small">${esc(s.d)}</div></div></li>`).join('')}</ol>
+        <div class="card"><h3><span class="num-title">5</span> Le débrief de 2 minutes</h3>
+          <ul class="framing">${f.debrief.map((q) => `<li>${esc(q)}</li>`).join('')}<li>${esc(C.debriefLastQuestion)} : ___</li></ul>
+          <p class="small muted" style="margin:12px 0 0">Après l'échange, fais ton débrief : il sera sauvegardé dans ton historique.</p>
         </div>
-        <div class="card"><h3>💬 Phrases utiles</h3>${f.phrases.map((ph) => `<div class="quote">${esc(ph)}</div>`).join('')}</div>
-        <details class="card"><summary><b>Voir les pièges des autres profils</b></summary>
-          ${others.map((k) => `<p style="margin:14px 0 0"><b>${profileOf(k).emoji} ${esc(profileOf(k).name)} :</b> <span class="muted">${esc(f.traps[k].trap)}</span></p>`).join('')}
-        </details>
       </div>
       <div class="actions">
-        <a href="#/debrief/${f.id}" class="btn primary">J'ai vécu la situation → faire mon débrief</a>
+        <a href="#/debrief/${f.id}" class="btn primary">Faire mon débrief</a>
         <a href="#/accompagnement" class="btn accent">Aller plus loin</a>
       </div>`;
   };
 
   // ---------- Débrief ----------
+  const debriefQuestions = (f) => f.debrief.map((q, i) => `
+    <label>${esc(q)}</label>
+    <div class="choice-row">${C.debriefAnswers.map((o, k) => `<label><input type="radio" name="q${i}" value="${o.v}" ${k === 0 ? 'required' : ''}><span>${esc(o.label)}</span></label>`).join('')}</div>`).join('');
+
   views.debrief = (user, ficheId) => {
     const f = fiche(ficheId) || C.fiches[0];
     const pk = Store.profile(user);
-    const choice = (name, list, req) => `<div class="choice-row">${list.map((o, i) => `<label><input type="radio" name="${name}" value="${o.v}" ${req && i === 0 ? 'required' : ''}><span>${o.emoji ? o.emoji + ' ' : ''}${esc(o.label)}</span></label>`).join('')}</div>`;
     return `
       <a href="#/fiche/${f.id}" class="back">← Retour à la fiche</a>
-      <h1>Mon débrief</h1>
-      <p class="muted">Prends 3 minutes pour analyser la situation : c'est là que se construisent les nouveaux réflexes.</p>
+      <h1>Le débrief de 2 minutes</h1>
+      <p class="muted">C'est là que se construisent les nouveaux réflexes.</p>
       <form id="debriefForm" class="card section" novalidate>
         <div class="grid2" style="gap:0 16px">
           <div><label for="ficheId">Fiche</label><select id="ficheId" name="ficheId">${C.fiches.map((x) => `<option value="${x.id}" ${x.id === f.id ? 'selected' : ''}>${x.emoji} ${esc(x.title)}</option>`).join('')}</select></div>
-          <div><label for="date">Date de la situation</label><input id="date" name="date" type="date" value="${todayISO()}" max="${todayISO()}" required></div>
+          <div><label for="date">Date de l'échange</label><input id="date" name="date" type="date" value="${todayISO()}" max="${todayISO()}" required></div>
         </div>
-        <label for="situation">La situation</label>
-        <textarea id="situation" name="situation" required placeholder="Que s'est-il passé ? Avec qui ? Quel était l'enjeu ?"></textarea>
-        <label for="action">Ce que j'ai fait</label>
-        <textarea id="action" name="action" placeholder="Comment ai-je abordé la situation ? Quelles étapes de la fiche ai-je suivies ?"></textarea>
-        <label>Résultat</label>
-        ${choice('outcome', C.debriefOutcomes, true)}
-        <label>Suis-je tombé(e) dans mon piège ?</label>
-        <p class="small muted" id="trapReminder" style="margin:0 0 8px">Rappel : ${esc(fiche(f.id).traps[pk].trap)}</p>
-        ${choice('trapFell', C.debriefTrapAnswers, true)}
-        <label for="learning">Ce que je retiens</label>
-        <textarea id="learning" name="learning" placeholder="Ce qui a marché, ce que je ferais autrement…"></textarea>
-        <label for="nextStep">Ma prochaine action</label>
-        <input id="nextStep" name="nextStep" placeholder="Une action concrète et datée">
+        <label for="situation">En une phrase, la situation <span class="muted">(facultatif)</span></label>
+        <input id="situation" name="situation" placeholder="Ex. : recadrage de Paul sur ses retards">
+        <div id="debriefQuestions">${debriefQuestions(f)}</div>
+        <label for="different">${esc(C.debriefLastQuestion)}</label>
+        <textarea id="different" name="different" required></textarea>
+        <p class="small muted" id="trapReminder" style="margin:14px 0 0">⚠️ Ton piège sur cette fiche : ${esc(f.traps[pk])}</p>
         <div class="error" id="formError"></div>
         <div class="actions"><button class="btn primary">Enregistrer mon débrief</button></div>
       </form>`;
   };
 
   // ---------- Historique ----------
+  const debriefScore = (d) => {
+    const ans = d.answers || [];
+    if (!ans.length) return null;
+    return ans.reduce((s, v) => s + ((C.debriefAnswers.find((o) => o.v === v) || {}).score || 0), 0) / ans.length;
+  };
+  const scoreBadge = (d) => {
+    const s = debriefScore(d);
+    if (s === null) return '';
+    const yes = (d.answers || []).filter((v) => v === 'oui').length;
+    return `<span class="badge ${s >= 0.99 ? 'ok' : s >= 0.5 ? 'warn' : 'danger'}">${yes}/${d.answers.length} oui</span>`;
+  };
+
   let historyFilter = '';
   views.historique = (user, id) => {
     if (id) return historyDetail(user, id);
     const all = [...user.debriefs].sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt));
     const list = historyFilter ? all.filter((d) => d.ficheId === historyFilter) : all;
-    const avoided = all.filter((d) => d.trapFell === 'non').length;
-    const success = all.filter((d) => d.outcome === 'reussi').length;
-    const pct = (n) => (all.length ? Math.round((n / all.length) * 100) + ' %' : '—');
+    const scores = all.map(debriefScore).filter((s) => s !== null);
+    const avg = scores.length ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) + ' %' : '—';
+    const tried = new Set(all.map((d) => d.ficheId)).size;
     return `
       <h1>Mon historique</h1>
       <p class="muted">Tous tes débriefs, pour mesurer tes progrès.</p>
       <div class="stats section">
         <div class="card stat"><b>${all.length}</b><span class="small muted">débrief${all.length > 1 ? 's' : ''}</span></div>
-        <div class="card stat"><b>${pct(avoided)}</b><span class="small muted">piège évité</span></div>
-        <div class="card stat"><b>${pct(success)}</b><span class="small muted">situations réussies</span></div>
+        <div class="card stat"><b>${tried} / ${C.fiches.length}</b><span class="small muted">fiches pratiquées</span></div>
+        <div class="card stat"><b>${avg}</b><span class="small muted">de réponses « oui »</span></div>
       </div>
       <div class="section">
         <div class="filters">
@@ -296,12 +310,12 @@
           const f = fiche(d.ficheId) || {};
           return `<li><a href="#/historique/${d.id}">
             <span class="ico">${f.emoji || '📝'}</span>
-            <div class="grow"><b>${esc(f.title || 'Fiche')}</b><div class="small muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.situation)}</div>
+            <div class="grow"><b>${esc(f.title || 'Fiche')}</b>
+            ${d.situation ? `<div class="small muted ellipsis">${esc(d.situation)}</div>` : ''}
             <div class="small muted">${fmtDate(d.date)}</div></div>
-            <span title="${esc(outcome(d.outcome).label)}" style="font-size:22px">${outcome(d.outcome).emoji || ''}</span>
-            <span class="badge ${trapBadge(d.trapFell)}">${d.trapFell === 'non' ? 'Piège évité' : d.trapFell === 'oui' ? 'Piège' : 'En partie'}</span>
+            ${scoreBadge(d)}
           </a></li>`;
-        }).join('')}</ul></div>` : `<div class="card empty">${all.length ? 'Aucun débrief pour cette fiche.' : 'Aucun débrief pour l\'instant.<br>Choisis une fiche, mets-la en pratique, puis reviens faire ton débrief.'}<div class="actions" style="justify-content:center"><a href="#/fiches" class="btn primary">Voir mes fiches</a></div></div>`}
+        }).join('')}</ul></div>` : `<div class="card empty">${all.length ? 'Aucun débrief pour cette fiche.' : "Aucun débrief pour l'instant.<br>Choisis une fiche, mets-la en pratique, puis reviens faire ton débrief."}<div class="actions" style="justify-content:center"><a href="#/fiches" class="btn primary">Voir mes fiches</a></div></div>`}
       </div>
       ${goFurtherBanner()}`;
   };
@@ -309,26 +323,23 @@
   function historyDetail(user, id) {
     const d = user.debriefs.find((x) => x.id === id);
     if (!d) return '<a href="#/historique" class="back">← Historique</a><div class="card empty">Débrief introuvable.</div>';
-    const f = fiche(d.ficheId) || { traps: {} };
+    const f = fiche(d.ficheId);
     const p = profileOf(d.profile);
-    const trap = f.traps[d.profile];
-    const row = (label, val) => (val ? `<dt>${label}</dt><dd>${esc(val)}</dd>` : '');
+    const label = (v) => (C.debriefAnswers.find((o) => o.v === v) || {}).label || '—';
+    const cls = (v) => ({ oui: 'ok', partiel: 'warn', non: 'danger' }[v] || '');
     return `
       <a href="#/historique" class="back">← Historique</a>
       <div class="eyebrow">Débrief du ${fmtDate(d.date)}</div>
-      <h1>${f.emoji || ''} ${esc(f.title || '')}</h1>
-      <div class="chips"><span class="chip">${outcome(d.outcome).emoji || ''} ${esc(outcome(d.outcome).label || '')}</span><span class="badge ${trapBadge(d.trapFell)}" style="padding:6px 12px">${esc(trapAnswer(d.trapFell).label || '')}</span>${p ? `<span class="chip">${p.emoji} ${esc(p.name)}</span>` : ''}</div>
+      <h1>${f ? f.emoji + ' ' + esc(f.title) : 'Débrief'}</h1>
+      <div class="chips">${scoreBadge(d)}${p ? `<span class="chip">${p.emoji} ${esc(p.name)}</span>` : ''}</div>
       <div class="card section">
-        <dl class="debrief" style="margin:0">
-          ${row('La situation', d.situation)}
-          ${row("Ce que j'ai fait", d.action)}
-          ${row('Ce que je retiens', d.learning)}
-          ${row('Ma prochaine action', d.nextStep)}
-        </dl>
+        ${d.situation ? `<p><b>La situation :</b> ${esc(d.situation)}</p>` : ''}
+        ${f ? `<ul class="answers-list">${f.debrief.map((q, i) => `<li><span>${esc(q)}</span><span class="badge ${cls((d.answers || [])[i])}">${esc(label((d.answers || [])[i]))}</span></li>`).join('')}</ul>` : ''}
+        ${d.different ? `<dl class="debrief" style="margin:0"><dt>${esc(C.debriefLastQuestion)}</dt><dd>${esc(d.different)}</dd></dl>` : ''}
       </div>
-      ${trap ? `<div class="trap section"><h3>⚠️ Le piège à surveiller</h3><p style="margin:0">${esc(trap.trap)}</p><div class="antidote"><b>Antidote :</b> ${esc(trap.antidote)}</div></div>` : ''}
+      ${f && d.profile && f.traps[d.profile] ? `<div class="trap section"><h3>⚠️ Ton piège à surveiller</h3><p style="margin:0">${esc(f.traps[d.profile])}</p></div>` : ''}
       <div class="actions">
-        <a href="#/fiche/${d.ficheId}" class="btn">Revoir la fiche</a>
+        ${f ? `<a href="#/fiche/${f.id}" class="btn">Revoir la fiche</a>` : ''}
         <button class="btn ghost danger" data-act="delete-debrief" data-id="${d.id}">Supprimer</button>
       </div>
       ${goFurtherBanner()}`;
@@ -338,7 +349,7 @@
   views.accompagnement = (user) => {
     const pk = Store.profile(user);
     const p = profileOf(pk);
-    const fell = user.debriefs.filter((d) => d.trapFell !== 'non').length;
+    const fell = user.debriefs.filter((d) => (d.answers || []).some((v) => v !== 'oui')).length;
     return `
       <div class="card profile-hero" style="--pc:var(--accent)">
         <div class="eyebrow">Aller plus loin</div>
@@ -349,7 +360,7 @@
         <div class="card">
           <h3>${p.emoji} Pour toi, ${esc(user.firstName)}, profil ${esc(p.name)}</h3>
           <p>Ton piège principal : <b>${esc(p.trap.split(':')[0])}</b>.</p>
-          ${user.debriefs.length ? `<p class="muted" style="margin:0">Tu as réalisé ${user.debriefs.length} débrief${user.debriefs.length > 1 ? 's' : ''}${fell ? `, dont ${fell} où le piège t'a (au moins en partie) rattrapé(e)` : ''}. On peut s'appuyer dessus dès la première séance.</p>` : '<p class="muted" style="margin:0">Pas besoin d\'avoir fait de débrief : on part de ta réalité.</p>'}
+          ${user.debriefs.length ? `<p class="muted" style="margin:0">Tu as réalisé ${user.debriefs.length} débrief${user.debriefs.length > 1 ? 's' : ''}${fell ? `, dont ${fell} avec des points à travailler` : ''}. On peut s'appuyer dessus dès la première séance.</p>` : '<p class="muted" style="margin:0">Pas besoin d\'avoir fait de débrief : on part de ta réalité.</p>'}
         </div>
         <div class="card"><h3>Au programme</h3><ul style="margin:0;padding-left:20px">${C.config.coachingBullets.map((b) => `<li style="margin-bottom:6px">${esc(b)}</li>`).join('')}</ul></div>
       </div>
@@ -421,9 +432,11 @@
         await Store.login(data.email, data.password);
         render();
       } else {
-        if (!data.situation.trim()) throw new Error('Décris au moins la situation.');
-        if (!data.outcome || !data.trapFell) throw new Error('Indique le résultat et si tu es tombé(e) dans ton piège.');
-        const d = Store.saveDebrief(data);
+        const f = fiche(data.ficheId);
+        const answers = f.debrief.map((_, i) => data['q' + i]);
+        if (answers.some((v) => !v)) throw new Error('Réponds aux ' + f.debrief.length + ' questions du débrief.');
+        if (!data.different.trim()) throw new Error('Note ce que tu feras différemment la prochaine fois.');
+        const d = Store.saveDebrief({ ficheId: f.id, date: data.date, situation: data.situation.trim(), answers, different: data.different.trim() });
         toast('Débrief enregistré dans ton historique ✅');
         go('historique/' + d.id);
       }
@@ -435,7 +448,8 @@
   document.addEventListener('change', (e) => {
     if (e.target.id === 'ficheId') {
       const f = fiche(e.target.value);
-      $('#trapReminder').textContent = 'Rappel : ' + f.traps[Store.profile()].trap;
+      $('#debriefQuestions').innerHTML = debriefQuestions(f);
+      $('#trapReminder').textContent = '⚠️ Ton piège sur cette fiche : ' + f.traps[Store.profile()];
     }
   });
 
